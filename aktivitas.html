@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktivitas Lab - SMKN 1 Katapang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/aktivitas.css"> </head>
+<body>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/50" alt="Logo" class="sidebar-logo">
+                <div class="school-name">
+                    <h3>SMKN 1 KATAPANG</h3>
+                    <span>SMK bisa, SMK hebat</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li class="active"><a href="aktivitas.html"><i class="fas fa-chart-line"></i> Aktivitas Lab</a></li>
+                <li><a href="kelas.html"><i class="fas fa-book"></i> Data Kelas</a></li>
+                <li><a href="lab.html"><i class="fas fa-flask"></i> Data Lab</a></li>
+                <li><a href="kartu.html"><i class="fas fa-id-card"></i> Data Kartu</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+                <div class="user-profile">
+                    <i class="far fa-bell"></i>
+                    <div class="profile-info">
+                        <img src="https://via.placeholder.com/40" alt="User" class="avatar">
+                        <span id="userNameDisplay">Loading...</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="page-header-title">
+                    <i class="fas fa-chart-line"></i> Aktivitas Lab
+                </div>
+
+                <div class="filter-container">
+                    <div class="filter-header">
+                        <i class="fas fa-filter"></i> Filter Data
+                        <button id="btnReset" class="btn-reset"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                    <div class="filter-inputs">
+                        <div class="form-group">
+                            <label>Pilih Lab</label>
+                            <select id="filterLab">
+                                <option value="">Semua Lab</option>
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pilih Kelas</label>
+                            <select id="filterKelas">
+                                <option value="">Semua Kelas</option>
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Mulai</label>
+                            <input type="date" id="filterStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Sampai</label>
+                            <input type="date" id="filterEndDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="filterStatus">
+                                <option value="">Semua Status</option>
+                                <option value="CHECKIN">Check In</option>
+                                <option value="CHECKOUT">Check Out</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="card card-purple-blue">
+                        <div class="card-icon-simple"><i class="fas fa-history"></i></div>
+                        <div class="card-info">
+                            <h3>Total Aktivitas</h3>
+                            <p id="statTotalAktivitas">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-teal">
+                        <div class="card-icon-simple"><i class="fas fa-door-open"></i></div>
+                        <div class="card-info">
+                            <h3>Sedang Aktif</h3>
+                            <p id="statSedangAktif">0</p>
+                        </div>
+                    </div>
+                    <div class="card card-orange">
+                        <div class="card-icon-simple"><i class="fas fa-user-clock"></i></div>
+                        <div class="card-info">
+                            <h3>Rata-rata Durasi</h3>
+                            <p id="statRataDurasi">0 menit</p>
+                        </div>
+                    </div>
+                    <div class="card card-blue-light">
+                        <div class="card-icon-simple"><i class="fas fa-thumbs-up"></i></div>
+                        <div class="card-info">
+                            <h3>Lab Terpopuler</h3>
+                            <p id="statLabPopuler">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3><i class="fas fa-list"></i> Daftar Aktivitas Lab</h3>
+                        <div class="table-actions">
+                            <button class="btn-outline"><i class="fas fa-download"></i> Export Excel</button>
+                            <button class="btn-outline" onclick="loadData()"><i class="fas fa-sync"></i> Refresh</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kartu UID</th>
+                                <th>Lab</th>
+                                <th>Kelas</th>
+                                <th>Waktu Masuk</th>
+                                <th>Waktu Keluar</th>
+                                <th>Durasi</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/aktivitas.js"></script>
+</body>
+</html>

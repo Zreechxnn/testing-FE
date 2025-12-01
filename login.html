@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SMKN 1 Katapang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-side">
+            <div class="logo-container">
+                <img src="https://via.placeholder.com/100x100.png?text=Logo" alt="Logo SMKN 1 Katapang" class="logo">
+                <h1>SMKN 1 KATAPANG</h1>
+                <p>SMK bisa, SMK hebat</p>
+            </div>
+            <div class="badge-system">
+                SISTEM AKSES LAB
+            </div>
+        </div>
+
+        <div class="right-side">
+            <div class="login-card">
+                <h2>Username</h2>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <input type="text" id="username" placeholder="Masukan Username Anda" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+
+                    <h2>Password</h2>
+                    <div class="input-group">
+                        <input type="password" id="password" placeholder="Masukan Password Anda" required>
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+
+                    <button type="submit" class="btn-login">LOGIN</button>
+                </form>
+                <p id="errorMessage" class="error-text"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

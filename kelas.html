@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Kelas - SMKN 1 Katapang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/kelas.css">
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/50" alt="Logo" class="sidebar-logo">
+                <div class="school-name">
+                    <h3>SMKN 1 KATAPANG</h3>
+                    <span>SMK bisa, SMK hebat</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="aktivitas.html"><i class="fas fa-chart-line"></i> Aktivitas Lab</a></li>
+                <li class="active"><a href="kelas.html"><i class="fas fa-book"></i> Data Kelas</a></li>
+                <li><a href="lab.html"><i class="fas fa-flask"></i> Data Lab</a></li>
+                <li><a href="kartu.html"><i class="fas fa-id-card"></i> Data Kartu</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search">
+                </div>
+                <div class="user-profile">
+                    <div class="profile-info">
+                        <img src="https://via.placeholder.com/40" alt="User" class="avatar">
+                        <span id="userNameDisplay">Loading...</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="page-header">
+                    <div class="page-title-badge">Data Kelas</div>
+                    <button class="btn-add" onclick="openModal()">
+                        <i class="fas fa-plus"></i> Tambahkan Kelas
+                    </button>
+                </div>
+
+                <div class="table-card">
+                    <h3 class="section-title">Kelas</h3>
+                    <div class="filter-row">
+                        <select id="filterKelasDropdown" class="filter-dropdown">
+                            <option value="">Semua Kelas</option>
+                            </select>
+                    </div>
+
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th width="10%">NO</th>
+                                <th width="30%">KELAS</th>
+                                <th width="30%">RFID UID</th> <th width="30%">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="kelasModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">Tambah Kelas</h2>
+            <form id="kelasForm">
+                <input type="hidden" id="kelasId">
+                <div class="form-group">
+                    <label for="namaKelas">Nama Kelas</label>
+                    <input type="text" id="namaKelas" placeholder="Contoh: 12 RPL 1" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-save">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/kelas.js"></script>
+</body>
+</html>

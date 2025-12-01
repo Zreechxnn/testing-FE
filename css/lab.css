@@ -1,0 +1,130 @@
+/* css/lab.css */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-title-badge {
+    background: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    font-size: 18px;
+}
+
+.btn-add {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+.btn-add:hover { background-color: #d0d0d0; }
+
+.table-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.filter-dropdown {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.custom-table th {
+    text-align: left;
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.custom-table td {
+    background: white;
+    padding: 15px 20px;
+    font-weight: 500;
+    color: #333;
+    border-top: 1px solid #f9f9f9;
+    border-bottom: 1px solid #f9f9f9;
+}
+.custom-table tr:hover td { background-color: #fafafa; }
+
+.btn-action {
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-action:hover { background-color: #f0f0f0; }
+
+.btn-delete { color: #d32f2f; border-color: #ffcdd2; }
+.btn-delete:hover { background-color: #ffebee; }
+
+/* Modal */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0;
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.5); 
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 12px;
+    width: 400px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+.close {
+    color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;
+}
+.close:hover { color: black; }
+
+.form-group { margin: 20px 0; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
+.form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.btn-save { background-color: #0f2540; color: white; padding: 8px 20px; border: none; border-radius: 5px; cursor: pointer; }
+.btn-cancel { background-color: transparent; border: 1px solid #ccc; padding: 8px 20px; border-radius: 5px; cursor: pointer; }

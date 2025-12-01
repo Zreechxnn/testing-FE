@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SMKN 1 Katapang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="https://via.placeholder.com/50" alt="Logo" class="sidebar-logo">
+                <div class="school-name">
+                    <h3>SMKN 1 KATAPANG</h3>
+                    <span>SMK bisa, SMK hebat</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="active"><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="aktivitas.html"><i class="fas fa-chart-line"></i> Aktivitas Lab</a></li>
+                <li><a href="kelas.html"><i class="fas fa-book"></i> Data Kelas</a></li>
+                <li><a href="lab.html"><i class="fas fa-flask"></i> Data Lab</a></li>
+                <li><a href="kartu.html"><i class="fas fa-id-card"></i> Data Kartu</a></li>
+            </ul>
+
+            <div class="logout-section">
+                <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+                <div class="user-profile">
+                    <i class="far fa-bell"></i>
+                    <div class="profile-info">
+                        <img src="https://via.placeholder.com/40" alt="User" class="avatar">
+                        <span id="userNameDisplay">Loading...</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <h2 class="page-title">Dashboard</h2>
+
+                <div class="stats-grid">
+                    <div class="card card-purple">
+                        <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="card-info">
+                            <h3>Total Lab</h3>
+                            <p id="statTotalLab">0</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-teal">
+                        <div class="card-icon"><i class="fas fa-door-open"></i></div>
+                        <div class="card-info">
+                            <h3>Lab Aktif</h3>
+                            <p id="statLabAktif">0</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-pink">
+                        <div class="card-icon"><i class="fas fa-clock"></i></div>
+                        <div class="card-info">
+                            <h3>Total Kelas</h3>
+                            <p id="statTotalKelas">0</p>
+                        </div>
+                    </div>
+
+                    <div class="card card-blue">
+                        <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="card-info">
+                            <h3>Total Akses</h3>
+                            <p id="statTotalAkses">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <h3>Statistic</h3>
+                        <div class="chart-nav">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>Aug 2021</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    <p class="chart-subtitle">Penggunaan Lab</p>
+                    <div class="chart-visual">
+                        <svg viewBox="0 0 500 100" class="simple-chart">
+                            <path d="M0,80 C150,90 250,10 500,40" stroke="#4a90e2" fill="none" stroke-width="2"/>
+                        </svg>
+                        <div class="months">
+                            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+                            <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
