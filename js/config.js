@@ -1,3 +1,3 @@
 const CONFIG = {
-    BASE_URL: "http://apiakses.runasp.net"
+    BASE_URL: "https://zreech-apiakses.hf.space"
 };
