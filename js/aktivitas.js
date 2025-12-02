@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function checkLogin() {
     const token = localStorage.getItem('authToken');
-    if (!token) window.location.href = 'login.html';
+    if (!token) window.location.href = '/';
     const userData = JSON.parse(localStorage.getItem('userData'));
     if(userData) document.getElementById('userNameDisplay').innerText = userData.username;
 }

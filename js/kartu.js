@@ -32,14 +32,14 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
-        window.location.href = 'login.html';
+        window.location.href = '/';
     });
 });
 
 // --- UTILS ---
 function checkLogin() {
     const token = localStorage.getItem('authToken');
-    if (!token) window.location.href = 'login.html';
+    if (!token) window.location.href = '/';
     const userData = JSON.parse(localStorage.getItem('userData'));
     if(userData && document.getElementById('userNameDisplay')) {
         document.getElementById('userNameDisplay').innerText = userData.username;

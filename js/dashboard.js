@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     if (!token) {
         alert("Anda harus login terlebih dahulu!");
-        window.location.href = 'login.html';
+        window.location.href = '/';
         return;
     }
 
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         e.preventDefault();
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
-        window.location.href = 'login.html';
+        window.location.href = '/';
     });
 
     // 3. Fetch Dashboard Stats
