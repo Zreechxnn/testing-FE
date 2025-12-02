@@ -1,25 +1,16 @@
 // js/kelas.js
 
 let allDataKelas = [];
+let allDataKartu = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     checkLogin();
-    loadKelas();
+    loadDataCombined(); // Load Kelas dan Kartu bersamaan
 
-    // Event Listener untuk Search
-    document.getElementById('searchInput').addEventListener('keyup', function(e) {
-        filterTable(e.target.value);
-    });
-
-    // Event Listener untuk Dropdown Filter
-    document.getElementById('filterKelasDropdown').addEventListener('change', function(e) {
-        filterTable(e.target.value);
-    });
-
-    // Handle Form Submit (Tambah / Edit)
+    document.getElementById('searchInput').addEventListener('keyup', (e) => filterTable(e.target.value));
+    document.getElementById('filterKelasDropdown').addEventListener('change', (e) => filterTable(e.target.value));
     document.getElementById('kelasForm').addEventListener('submit', handleFormSubmit);
-    
-    // Logout
+
     document.getElementById('logoutBtn').addEventListener('click', (e) => {
         e.preventDefault();
         localStorage.removeItem('authToken');
@@ -35,34 +26,39 @@ function checkLogin() {
     if(userData) document.getElementById('userNameDisplay').innerText = userData.username;
 }
 
-// --- CRUD FUNCTIONS ---
-
-// 1. GET: Load Data Kelas
-async function loadKelas() {
+// 1. Fetch Data Kelas & Kartu Sekaligus
+async function loadDataCombined() {
     const token = localStorage.getItem('authToken');
     const tableBody = document.getElementById('tableBody');
-    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center">Loading...</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center">Loading data...</td></tr>';
 
     try {
-        const response = await fetch(`${CONFIG.BASE_URL}/api/Kelas`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const result = await response.json();
+        // Jalankan request secara paralel
+        const [resKelas, resKartu] = await Promise.all([
+            fetch(`${CONFIG.BASE_URL}/api/Kelas`, { headers: { 'Authorization': `Bearer ${token}` } }),
+            fetch(`${CONFIG.BASE_URL}/api/Kartu`, { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
 
-        if (result.success) {
-            allDataKelas = result.data; // Simpan ke variabel global
+        const dataKelas = await resKelas.json();
+        const dataKartu = await resKartu.json();
+
+        if (dataKelas.success) {
+            allDataKelas = dataKelas.data;
+            allDataKartu = dataKartu.success ? dataKartu.data : [];
+            
             renderTable(allDataKelas);
             populateDropdown(allDataKelas);
         } else {
-            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center">${result.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center">${dataKelas.message}</td></tr>`;
         }
+
     } catch (error) {
-        console.error(error);
-        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red">Gagal mengambil data</td></tr>';
+        console.error("Error loading combined data:", error);
+        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red">Gagal koneksi ke server</td></tr>';
     }
 }
 
-// Render Tabel
+// Render Tabel dengan UID Lookup
 function renderTable(data) {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
@@ -73,14 +69,22 @@ function renderTable(data) {
     }
 
     data.forEach((item, index) => {
-        // Catatan: API hanya return id dan nama. RFID UID tidak ada di API Kelas, jadi di-set default.
-        const rfidUid = "-"; 
+        // Cari kartu yang terhubung dengan kelas ini
+        const linkedCard = allDataKartu.find(k => k.kelasId === item.id);
+        
+        let rfidDisplay = `<span style="color:#ccc; font-style:italic;">Belum terhubung</span>`;
+        if (linkedCard) {
+            rfidDisplay = `<span style="font-family:monospace; background:#e3f2fd; color:#1565c0; padding:2px 6px; border-radius:4px;">${linkedCard.uid}</span>`;
+            if (linkedCard.status !== 'AKTIF') {
+                rfidDisplay += ` <span style="font-size:10px; color:red">(${linkedCard.status})</span>`;
+            }
+        }
 
         const row = `
             <tr>
                 <td>${index + 1}</td>
                 <td style="font-weight:bold">${item.nama}</td>
-                <td style="font-family: monospace;">${rfidUid}</td>
+                <td>${rfidDisplay}</td>
                 <td>
                     <button class="btn-action" onclick="openEditModal(${item.id}, '${item.nama}')">
                         <i class="fas fa-edit"></i> Edit
@@ -95,7 +99,7 @@ function renderTable(data) {
     });
 }
 
-// 2. POST & PUT: Handle Submit
+// Handle Submit (Create/Update)
 async function handleFormSubmit(e) {
     e.preventDefault();
     const token = localStorage.getItem('authToken');
@@ -121,7 +125,7 @@ async function handleFormSubmit(e) {
         if (response.ok && result.success) {
             alert(isEdit ? "Data berhasil diperbarui!" : "Data berhasil ditambahkan!");
             closeModal();
-            loadKelas(); // Refresh tabel
+            loadDataCombined(); // Refresh data agar sinkron
         } else {
             alert("Gagal menyimpan: " + (result.message || "Unknown Error"));
         }
@@ -131,7 +135,7 @@ async function handleFormSubmit(e) {
     }
 }
 
-// 3. DELETE: Hapus Data
+// Delete Data
 window.deleteKelas = async function(id) {
     if (!confirm("Apakah Anda yakin ingin menghapus kelas ini?")) return;
 
@@ -141,12 +145,11 @@ window.deleteKelas = async function(id) {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
-        // Cek result
+
         const result = await response.json();
         if (response.ok && result.success) {
             alert("Data berhasil dihapus.");
-            loadKelas();
+            loadDataCombined();
         } else {
             alert("Gagal menghapus: " + result.message);
         }
@@ -156,9 +159,7 @@ window.deleteKelas = async function(id) {
     }
 }
 
-// --- HELPER FUNCTIONS ---
-
-// Filter Table (Client Side)
+// Helper Functions
 function filterTable(keyword) {
     const lowerKeyword = keyword.toLowerCase();
     const filtered = allDataKelas.filter(item => 
@@ -172,18 +173,17 @@ function populateDropdown(data) {
     dropdown.innerHTML = '<option value="">Semua Kelas</option>';
     data.forEach(item => {
         let option = document.createElement('option');
-        option.value = item.nama; // Filter by nama text
+        option.value = item.nama;
         option.text = item.nama;
         dropdown.appendChild(option);
     });
 }
 
-// Modal Logic
 window.openModal = function() {
     document.getElementById('kelasModal').style.display = 'block';
     document.getElementById('modalTitle').innerText = "Tambah Kelas";
     document.getElementById('kelasForm').reset();
-    document.getElementById('kelasId').value = ""; // Clear ID for Add mode
+    document.getElementById('kelasId').value = "";
 }
 
 window.openEditModal = function(id, nama) {
@@ -197,7 +197,6 @@ window.closeModal = function() {
     document.getElementById('kelasModal').style.display = 'none';
 }
 
-// Close modal click outside
 window.onclick = function(event) {
     const modal = document.getElementById('kelasModal');
     if (event.target == modal) {
