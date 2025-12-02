@@ -4,10 +4,9 @@ let allActivities = [];
 
 document.addEventListener('DOMContentLoaded', function() {
     checkLogin();
-    loadFilters(); // Memuat Lab, Kelas, DAN User
+    loadFilters();
     loadData();
 
-    // Event Listeners
     document.getElementById('filterLab').addEventListener('change', applyFilter);
     document.getElementById('filterKelas').addEventListener('change', applyFilter);
     document.getElementById('filterUser').addEventListener('change', applyFilter); // Listener Baru
@@ -27,7 +26,6 @@ function checkLogin() {
     if(userData) document.getElementById('userNameDisplay').innerText = userData.username;
 }
 
-// 1. Load Filter (Lab, Kelas, User)
 async function loadFilters() {
     const token = localStorage.getItem('authToken');
     try {
@@ -102,7 +100,6 @@ async function loadData() {
     }
 }
 
-// 3. Render Table (Logika Tampilan User vs Kelas)
 function renderTable(data) {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
@@ -128,7 +125,6 @@ function renderTable(data) {
             durasiStr = `${durasiMenit}m`;
         }
 
-        // Status Badge
         let badgeClass = 'badge-in';
         let statusLabel = 'CHECK IN';
         if (item.timestampKeluar && item.timestampMasuk !== item.timestampKeluar) {
@@ -136,11 +132,9 @@ function renderTable(data) {
              statusLabel = 'CHECK OUT';
         }
 
-        // LOGIKA BARU: Menentukan Tampilan Pemilik (User atau Kelas)
         let ownerDisplay = '-';
         
         if (item.userUsername) {
-            // Jika milik User
             ownerDisplay = `
                 <div style="display:flex; align-items:center; gap:5px;">
                     <i class="fas fa-user-circle" style="color:#1976d2;"></i>
@@ -148,7 +142,6 @@ function renderTable(data) {
                 </div>
             `;
         } else if (item.kelasNama) {
-            // Jika milik Kelas
             ownerDisplay = `
                 <div style="display:flex; align-items:center; gap:5px;">
                     <i class="fas fa-users" style="color:#e65100;"></i>
@@ -156,7 +149,6 @@ function renderTable(data) {
                 </div>
             `;
         } else {
-             // Fallback
              ownerDisplay = '<span style="color:#999; font-style:italic;">Tidak diketahui</span>';
         }
 
