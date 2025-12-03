@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         localStorage.removeItem('authToken');
         localStorage.removeItem('userData');
-        window.location.href = '/index.html';
+        window.location.href = '/';
     });
 });
 
