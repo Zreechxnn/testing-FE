@@ -29,12 +29,12 @@ function checkLogin() {
     }
 }
 
-// 1. Load Data Filter (MODIFIKASI: Value menggunakan NAMA/USERNAME karena API Aktivitas tidak return ID)
+// 1. LOAD DATA FILTER
 async function loadFilters() {
     const token = localStorage.getItem('authToken');
     try {
         // --- A. Fetch Lab (Ruangan) ---
-        // Kita tetap pakai ID untuk Lab karena 'ruanganId' tersedia di data Aktivitas
+        // Lab tetap pakai ID karena di data aktivitas ada 'ruanganId'
         const resLab = await fetch(`${CONFIG.BASE_URL}/api/Ruangan`, { headers: { 'Authorization': `Bearer ${token}` } });
         const resultLab = await resLab.json();
         if (resultLab.success) {
@@ -49,7 +49,7 @@ async function loadFilters() {
         }
 
         // --- B. Fetch Kelas ---
-        // Kita gunakan NAMA sebagai value
+        // REVISI: Gunakan NAMA sebagai value, bukan ID
         const resKelas = await fetch(`${CONFIG.BASE_URL}/api/Kelas`, { headers: { 'Authorization': `Bearer ${token}` } });
         const resultKelas = await resKelas.json();
         if (resultKelas.success) {
@@ -57,14 +57,14 @@ async function loadFilters() {
             kelasSelect.innerHTML = '<option value="">Semua Kelas</option>';
             resultKelas.data.forEach(d => {
                 let opt = document.createElement('option');
-                opt.value = d.nama; // Value = Nama Kelas
+                opt.value = d.nama; // <--- PENTING: Value adalah String Nama
                 opt.innerText = d.nama;
                 kelasSelect.appendChild(opt);
             });
         }
 
         // --- C. Fetch User ---
-        // Kita gunakan USERNAME sebagai value
+        // REVISI: Gunakan USERNAME sebagai value, bukan ID
         const resUser = await fetch(`${CONFIG.BASE_URL}/api/User`, { headers: { 'Authorization': `Bearer ${token}` } });
         const resultUser = await resUser.json();
         if (resultUser.success) {
@@ -72,7 +72,7 @@ async function loadFilters() {
             userSelect.innerHTML = '<option value="">Semua User</option>';
             resultUser.data.forEach(d => {
                 let opt = document.createElement('option');
-                opt.value = d.username; // Value = Username
+                opt.value = d.username; // <--- PENTING: Value adalah String Username
                 opt.innerText = `${d.username} (${d.role})`;
                 userSelect.appendChild(opt);
             });
@@ -83,7 +83,7 @@ async function loadFilters() {
     }
 }
 
-// 2. Load Data Utama
+// 2. LOAD DATA UTAMA
 async function loadData() {
     const token = localStorage.getItem('authToken');
     const tableBody = document.getElementById('tableBody');
@@ -111,7 +111,7 @@ async function loadData() {
     }
 }
 
-// 3. Render Table
+// 3. RENDER TABLE
 function renderTable(data) {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
@@ -145,7 +145,7 @@ function renderTable(data) {
              statusLabel = 'CHECK OUT';
         }
 
-        // Tampilan Pemilik (User vs Kelas)
+        // Tampilan Pemilik
         let ownerDisplay = '-';
         if (item.userUsername) {
             ownerDisplay = `
@@ -186,7 +186,58 @@ function renderTable(data) {
     });
 }
 
-// 4. Kalkulasi Statistik Sederhana
+// 4. LOGIC FILTER REVISI (STRICT STRING MATCHING)
+function applyFilter() {
+    const labVal = document.getElementById('filterLab').value;
+    const kelasVal = document.getElementById('filterKelas').value; // Ini String Nama
+    const userVal = document.getElementById('filterUser').value;   // Ini String Username
+    const statusVal = document.getElementById('filterStatus').value;
+    const startVal = document.getElementById('filterStartDate').value;
+    const endVal = document.getElementById('filterEndDate').value;
+
+    let filtered = allActivities.filter(item => {
+        // A. Filter Lab (ID Comparison - Aman karena ruanganId angka)
+        if (labVal && item.ruanganId != labVal) return false;
+        
+        // B. Filter Kelas (String Matching)
+        if (kelasVal) {
+            // Jika data tidak punya kelasNama, atau namanya beda -> Hapus
+            // Gunakan trim() untuk membersihkan spasi tak terlihat
+            if (!item.kelasNama || item.kelasNama.trim() !== kelasVal.trim()) return false;
+        }
+        
+        // C. Filter User (String Matching)
+        if (userVal) {
+            // Jika data tidak punya userUsername, atau username beda -> Hapus
+            if (!item.userUsername || item.userUsername.trim() !== userVal.trim()) return false;
+        }
+
+        // D. Filter Status
+        if (statusVal) {
+            const isOut = (item.timestampKeluar && item.timestampMasuk !== item.timestampKeluar);
+            if (statusVal === 'CHECKIN' && isOut) return false;
+            if (statusVal === 'CHECKOUT' && !isOut) return false;
+        }
+
+        // E. Filter Tanggal
+        const itemDate = new Date(item.timestampMasuk).setHours(0,0,0,0);
+        if (startVal) {
+            const startDate = new Date(startVal).setHours(0,0,0,0);
+            if (itemDate < startDate) return false;
+        }
+        if (endVal) {
+            const endDate = new Date(endVal).setHours(0,0,0,0);
+            if (itemDate > endDate) return false;
+        }
+
+        return true;
+    });
+
+    renderTable(filtered);
+    calculateStats(filtered);
+}
+
+// 5. STATISTIK
 function calculateStats(data) {
     if(document.getElementById('statTotalAktivitas')) {
         document.getElementById('statTotalAktivitas').innerText = data.length;
@@ -228,7 +279,7 @@ function calculateStats(data) {
     }
 }
 
-// 5. Fungsi Hapus Data
+// 6. DELETE & RESET
 window.deleteAktivitas = async function(id) {
     if(!confirm("Hapus data aktivitas ini?")) return;
     const token = localStorage.getItem('authToken');
@@ -244,58 +295,6 @@ window.deleteAktivitas = async function(id) {
     }
 };
 
-// 6. Logic Filter Utama (MODIFIKASI: Strict Matching based on Name)
-function applyFilter() {
-    const labVal = document.getElementById('filterLab').value;
-    const kelasVal = document.getElementById('filterKelas').value; // Isi: Nama Kelas
-    const userVal = document.getElementById('filterUser').value;   // Isi: Username
-    const statusVal = document.getElementById('filterStatus').value;
-    const startVal = document.getElementById('filterStartDate').value;
-    const endVal = document.getElementById('filterEndDate').value;
-
-    let filtered = allActivities.filter(item => {
-        // A. Filter Lab (ID Comparison)
-        // Pakai != karena ID di HTML string, di JSON number
-        if (labVal && item.ruanganId != labVal) return false;
-        
-        // B. Filter Kelas (String Exact Match)
-        if (kelasVal) {
-            // Jika data ini tidak punya kelasNama (artinya milik user), atau namanya beda -> sembunyikan
-            if (!item.kelasNama || item.kelasNama !== kelasVal) return false;
-        }
-        
-        // C. Filter User (String Exact Match)
-        if (userVal) {
-            // Jika data ini tidak punya userUsername (artinya milik kelas), atau username beda -> sembunyikan
-            if (!item.userUsername || item.userUsername !== userVal) return false;
-        }
-
-        // D. Filter Status
-        if (statusVal) {
-            const isOut = (item.timestampKeluar && item.timestampMasuk !== item.timestampKeluar);
-            if (statusVal === 'CHECKIN' && isOut) return false;
-            if (statusVal === 'CHECKOUT' && !isOut) return false;
-        }
-
-        // E. Filter Tanggal
-        const itemDate = new Date(item.timestampMasuk).setHours(0,0,0,0);
-        if (startVal) {
-            const startDate = new Date(startVal).setHours(0,0,0,0);
-            if (itemDate < startDate) return false;
-        }
-        if (endVal) {
-            const endDate = new Date(endVal).setHours(0,0,0,0);
-            if (itemDate > endDate) return false;
-        }
-
-        return true;
-    });
-
-    renderTable(filtered);
-    calculateStats(filtered);
-}
-
-// 7. Reset Filter
 function resetFilter() {
     document.getElementById('filterLab').value = "";
     document.getElementById('filterKelas').value = "";
@@ -307,7 +306,7 @@ function resetFilter() {
     calculateStats(allActivities);
 }
 
-// 8. Export Excel
+// 7. EXPORT EXCEL
 function exportToExcel() {
     if (allActivities.length === 0) {
         alert("Tidak ada data untuk diexport");
@@ -315,7 +314,6 @@ function exportToExcel() {
     }
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    // Header CSV
     csvContent += "No,UID Kartu,Lab,Pemilik,Tanggal,Jam Masuk,Jam Keluar,Status\n";
 
     allActivities.forEach((item, index) => {
@@ -328,18 +326,16 @@ function exportToExcel() {
         
         let status = (item.timestampKeluar && item.timestampMasuk !== item.timestampKeluar) ? "CHECK OUT" : "CHECK IN";
 
-        // Tentukan String Pemilik untuk CSV
         let pemilik = "-";
         if (item.userUsername) pemilik = `User: ${item.userUsername}`;
         else if (item.kelasNama) pemilik = `Kelas: ${item.kelasNama}`;
 
-        // Escape koma dalam data agar CSV tidak berantakan
         const safeLab = `"${item.ruanganNama || ''}"`;
         const safePemilik = `"${pemilik}"`;
 
         const row = [
             index + 1,
-            `'${item.kartuUid || ''}`, // Tambah kutip satu agar excel baca sebagai string (bukan angka ilmiah)
+            `'${item.kartuUid || ''}`,
             safeLab,
             safePemilik,
             dateStr,
