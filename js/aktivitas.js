@@ -220,48 +220,63 @@ window.deleteAktivitas = async function(id) {
     }
 };
 
-// 4. Update Filter Logic (Cakup User)
 function applyFilter() {
+    // Ambil value dari dropdown
     const labVal = document.getElementById('filterLab').value;
     const kelasVal = document.getElementById('filterKelas').value;
-    const userVal = document.getElementById('filterUser').value; // Ambil nilai filter user
+    const userVal = document.getElementById('filterUser').value;
     const statusVal = document.getElementById('filterStatus').value;
     const startVal = document.getElementById('filterStartDate').value;
     const endVal = document.getElementById('filterEndDate').value;
 
     let filtered = allActivities.filter(item => {
-        // Filter Lab
+        // 1. Filter Lab (Ruangan)
+        // Gunakan != (bukan !==) untuk menangani perbedaan tipe data (string vs number)
         if (labVal && item.ruanganId != labVal) return false;
         
-        // Filter Kelas
-        if (kelasVal && item.kelasId != kelasVal) return false;
+        // 2. Filter Kelas
+        if (kelasVal) {
+            // LOGIC FIX: Jika filter kelas aktif, tapi data ini tidak punya kelasId (misal aktivitas user),
+            // ATAU id-nya tidak cocok, maka sembunyikan.
+            if (!item.kelasId || item.kelasId != kelasVal) return false;
+        }
         
-        // Filter User (BARU)
-        // Cek userId (jika API menyediakan userId di object aktivitas)
-        // Atau fallback ke userUsername matching jika userId tidak tersedia langsung
+        // 3. Filter User
         if (userVal) {
-             // Asumsi: item.userId tersedia. Jika tidak, sesuaikan dengan item.userUsername
-             if (item.userId && item.userId != userVal) return false;
-             // Jika item.userId tidak ada, kita skip logic ini atau perlu cari cara matching lain
+            // LOGIC FIX: Jika filter user aktif, tapi data ini tidak punya userId (misal aktivitas kelas),
+            // ATAU id-nya tidak cocok, maka sembunyikan.
+            if (!item.userId || item.userId != userVal) return false;
         }
 
-        // Filter Status
+        // 4. Filter Status
         if (statusVal) {
             const isOut = (item.timestampKeluar && item.timestampMasuk !== item.timestampKeluar);
             if (statusVal === 'CHECKIN' && isOut) return false;
             if (statusVal === 'CHECKOUT' && !isOut) return false;
         }
 
-        // Filter Tanggal
+        // 5. Filter Tanggal
+        // Konversi ke timestamp (set jam ke 00:00:00 untuk perbandingan tanggal murni)
         const itemDate = new Date(item.timestampMasuk).setHours(0,0,0,0);
-        if (startVal && itemDate < new Date(startVal).setHours(0,0,0,0)) return false;
-        if (endVal && itemDate > new Date(endVal).setHours(0,0,0,0)) return false;
+        
+        if (startVal) {
+            const startDate = new Date(startVal).setHours(0,0,0,0);
+            if (itemDate < startDate) return false;
+        }
+        
+        if (endVal) {
+            const endDate = new Date(endVal).setHours(0,0,0,0);
+            if (itemDate > endDate) return false;
+        }
 
         return true;
     });
 
+    // Render ulang tabel dan statistik dengan data hasil filter
     renderTable(filtered);
+    calculateStats(filtered); // Jangan lupa update statistik juga agar sinkron
 }
+
 
 // 5. Update Export Excel (Cakup User)
 function exportToExcel() {
